@@ -1,13 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import "./index.css";
-import {
-	FaRegCheckCircle,
-	FaRegCircle,
-	FaPen,
-	FaPlusCircle,
-	FaTrashAlt,
-} from "react-icons/fa";
+import { FaPen, FaTrashAlt } from "react-icons/fa";
 type Todo = {
 	title: string;
 	description: string;
@@ -20,8 +14,7 @@ const App = () => {
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
 	const [timeLimit, setTimeLimit] = useState("");
-	const [done, setDone] = useState("");
-	const [isValid, setIsValid] = useState(false);
+	const [done, setDone] = useState("none");
 	const [todos, setTodos] = useState<Todo[]>([]);
 
 	const handleTitleChange = (e: any) => {
@@ -32,6 +25,9 @@ const App = () => {
 	};
 	const handleTimeLimitChange = (e: any) => {
 		setTimeLimit(e.target.value);
+	};
+	const handleDoneChange = (e: any) => {
+		setDone(e.target.value);
 	};
 
 	const handleSubmit = (e: any) => {
@@ -51,7 +47,6 @@ const App = () => {
 		setDescription("");
 		setTimeLimit("");
 		setDone("");
-		console.log(todos);
 	};
 
 	const handleDelete = (id: string) => {
@@ -60,10 +55,9 @@ const App = () => {
 	};
 
 	useEffect(() => {
-		if (title !== "" && description !== "" && timeLimit !== "") {
-			setIsValid(true);
-		}
-	}, []);
+		console.log({ todos });
+	}, [todos]);
+
 	return (
 		<div className='w-4/5 ml-auto mr-auto center'>
 			<header>
@@ -115,20 +109,7 @@ const App = () => {
 					</div>
 				</div>
 			</form>
-			<section className='search mt-10 border flex justify-between p-4'>
-				<div className='pl-5'>
-					<label htmlFor='doing-status'>ステータス:</label>
-					<select name='doing-status' className='border'>
-						<option>未着手</option>
-						<option>進行中</option>
-						<option>完了</option>
-					</select>
-				</div>
-				<div className='pl-6'>
-					<label htmlFor='search-id'>ID:</label>
-					<input className='border' type='text' />
-				</div>
-			</section>
+
 			<section className='todo-list mt-10'>
 				<h2 className='text-3xl text-gray-700 text-center font-semibold m-4'>
 					Todo List
@@ -136,12 +117,18 @@ const App = () => {
 				<ul>
 					{todos.map((todo: Todo) => (
 						<li key={todo.id} className='border flex justify-between p-3 mb-2'>
-							<select name='example' className='w-2/12 mr-5 border'>
-								<option>未着手</option>
-								<option>進行中</option>
-								<option>完了</option>
+							<select
+								name='example'
+								className='w-2/12 mr-5 border'
+								onChange={handleDoneChange}>
+								<option value='none'>未着手</option>
+								<option value='doing'>進行中</option>
+								<option value='done'>完了</option>
 							</select>
-							<p className='w-7/12'>{todo.title}</p>
+							<div className='w-7/12 gap-10'>
+								<p className='font-bold mb-1'>{todo.title}</p>
+								<p className='text-xs'>{todo.description}</p>
+							</div>
 							<p className='w-2/12'>{todo.timeLimit}</p>
 							<div className='control-icons w-1/12 mr-1 flex justify-between'>
 								<button className=''>
