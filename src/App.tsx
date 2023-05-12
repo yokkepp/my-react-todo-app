@@ -15,6 +15,7 @@ const App = () => {
 	const [description, setDescription] = useState("");
 	const [timeLimit, setTimeLimit] = useState("");
 	const [done, setDone] = useState("none");
+	const [isEditing, setIsEditing] = useState(false);
 	const [todos, setTodos] = useState<Todo[]>([]);
 
 	const handleTitleChange = (e: any) => {
@@ -54,6 +55,18 @@ const App = () => {
 		setTodos(newTodos);
 	};
 
+	const handleUpdate = (todo: Todo) => {
+		console.log(todo);
+		setTitle(todo.title);
+		setDescription(todo.description);
+		setTimeLimit(todo.timeLimit);
+		setIsEditing(true);
+	};
+
+	const handleUpdateSubmit = () => {
+		setIsEditing(false);
+	};
+
 	useEffect(() => {
 		console.log({ todos });
 	}, [todos]);
@@ -65,8 +78,15 @@ const App = () => {
 					Todo App
 				</h1>
 			</header>
-			<form onSubmit={handleSubmit} className='input border bg-blue-50 rounded'>
-				<div className='m-3'>
+			<form
+				onSubmit={!isEditing ? handleSubmit : handleUpdateSubmit}
+				className=' p-3 input border bg-blue-50 rounded'>
+				{isEditing && (
+					<span className='bg-cyan-800 text-white text-sm px-2 py-1 rounded-xl'>
+						編集モード
+					</span>
+				)}
+				<div className='mt-3'>
 					<label htmlFor='title'>Title</label>
 					<input
 						id='title'
@@ -78,7 +98,7 @@ const App = () => {
 						onChange={handleTitleChange}
 					/>
 				</div>
-				<div className='m-3'>
+				<div className='mt-3'>
 					<label htmlFor='description'>Description</label>
 					<textarea
 						id='description'
@@ -89,7 +109,7 @@ const App = () => {
 						onChange={handleDescriptionChange}
 					/>
 				</div>
-				<div className='m-3 flex relative'>
+				<div className='mt-3 flex relative'>
 					<div className='w-1/3'>
 						<label htmlFor='timeLimit'>Time limit</label>
 						<input
@@ -103,8 +123,10 @@ const App = () => {
 						/>
 					</div>
 					<div className='w-1/3'>
-						<button className='py-3 px-5 bg-sky-600 rounded absolute right-0 bottom-0 text-white'>
-							登録する
+						<button
+							className='py-3 px-5 bg-sky-600 rounded absolute right-0 bottom-0 text-white disabled:bg-slate-300'
+							disabled={title === "" ? true : false}>
+							{!isEditing ? "登録する" : "更新する"}
 						</button>
 					</div>
 				</div>
@@ -114,6 +136,7 @@ const App = () => {
 				<h2 className='text-3xl text-gray-700 text-center font-semibold m-4'>
 					Todo List
 				</h2>
+
 				<ul>
 					{todos.map((todo: Todo) => (
 						<li key={todo.id} className='border flex justify-between p-3 mb-2'>
@@ -131,7 +154,7 @@ const App = () => {
 							</div>
 							<p className='w-2/12'>{todo.timeLimit}</p>
 							<div className='control-icons w-1/12 mr-1 flex justify-between'>
-								<button className=''>
+								<button className='' onClick={() => handleUpdate(todo)}>
 									<FaPen />
 								</button>
 								<button className='' onClick={() => handleDelete(todo.id)}>
