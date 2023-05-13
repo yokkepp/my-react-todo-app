@@ -1,4 +1,7 @@
 # ReactとTypeScriptを使ったTodoアプリ
+
+![スクリーンショット 2023-05-13 22 06 51](https://github.com/yokkepp/my-react-todo-app/assets/107005662/32e41c1e-ee0a-46e8-aafe-e9b4463344df)
+
 このプロジェクトは、
 `create-react-app --template typescript`
 で作成開始しました。
