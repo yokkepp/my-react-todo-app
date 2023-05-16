@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./App.css";
 import "./index.css";
 import { FaPen, FaTrashAlt } from "react-icons/fa";
@@ -19,7 +19,6 @@ type Edit = {
 };
 
 const App = () => {
-	//フォームの状態管理
 	const [formData, setFormData] = useState<Todo>({
 		title: "",
 		description: "",
@@ -28,37 +27,41 @@ const App = () => {
 		done: "none",
 	});
 
-	//編集中かどうかの状態管理
 	const [isEditing, setIsEditing] = useState<Edit>({
 		status: false,
 		id: "",
 	});
 
-	//Todoの配列の状態管理
 	const [todos, setTodos] = useState<Todo[]>([]);
 
-	//フォーム内のデータが変更になった場合の状態管理を更新する
+	/**
+	 * 現在のフォームの値をformDataに格納します。
+	 * @param e 対象のイベントです。
+	 */
 	function handleChange(
 		e:
 			| React.ChangeEvent<HTMLInputElement>
 			| React.ChangeEvent<HTMLTextAreaElement>
-	) {
+	): void {
 		const { name, value } = e.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	}
 
-	//登録
+	/**
+	 * formから複数の値を受け取り、ランダムなIDを付与してtodosに保存します。
+	 * その後、formを初期化します。
+	 * @function
+	 * @param e 対象のイベントです。
+	 */
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		//formからデータを全て受け取り、IDを付与して、todoに保存する
 		const uuid: string = crypto.randomUUID();
 		const newFormData = { ...formData, id: uuid };
 		if (todos !== undefined) {
 			setTodos([...todos, newFormData]);
 		}
 
-		//formの初期化
 		setFormData({
 			title: "",
 			description: "",
@@ -68,16 +71,22 @@ const App = () => {
 		});
 	};
 
-	//削除
+	/**
+	 * 削除対象のidを渡すことで、todoを削除できる関数です。
+	 * @function
+	 * @param id 削除対象のTodoリストのidです。
+	 */
 	const handleDelete = (id: string) => {
-		//idを受け取り、該当するtodoを取り除く
 		const newTodos = todos.filter((todo) => todo.id !== id);
 		setTodos(newTodos);
 	};
 
-	//編集
+	/**
+	 * 対象のtodoを渡すことで、編集モードに変更し、formに値を表示する関数です。
+	 * @function
+	 * @param todo 対象のtodoです。
+	 */
 	const handleUpdate = (todo: Todo) => {
-		console.log(todo);
 		setFormData({
 			title: todo.title,
 			description: todo.description,
@@ -89,14 +98,16 @@ const App = () => {
 		setIsEditing({ status: true, id: todo.id });
 	};
 
-	//編集中のデータを登録
+	/**
+	 * 編集中のformの値を受け取り、編集対象の値を更新し、編集状態とformの値を初期化をします。
+	 * @function
+	 * @param e formのイベントです。
+	 */
 	const handleUpdateSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		const newTodos = todos.map((todo) => {
-			console.log("handleUpdateSubmit:", todo);
 			if (todo.id === formData.id) {
 				return {
-					//todosに格納されているtodoのidと、formのidが一致した場合は、置き換える
 					title: formData.title,
 					description: formData.description,
 					timeLimit: formData.timeLimit,
@@ -109,10 +120,8 @@ const App = () => {
 		});
 		setTodos(newTodos);
 
-		//編集中の状態管理を初期化
 		setIsEditing({ status: false, id: "" });
 
-		//formの初期化
 		setFormData({
 			title: "",
 			description: "",
@@ -122,6 +131,11 @@ const App = () => {
 		});
 	};
 
+	/**
+	 * 対象となるtodoのDoneの値を更新する関数です。
+	 * @param targetTodo 編集すべきtodoです。
+	 * @param e 		 編集されたinputです。
+	 */
 	const handleDoneStatusChange = (targetTodo: Todo, e: any) => {
 		const newTodos = todos.map((todo) => {
 			if (todo.id !== targetTodo.id) {
@@ -133,15 +147,11 @@ const App = () => {
 		setTodos(newTodos);
 	};
 
-	useEffect(() => {
-		console.log({ todos });
-	}, [todos]);
-
 	return (
 		<div className='w-4/5 ml-auto mr-auto center'>
 			<header>
 				<h1 className='text-4xl text-gray-700 text-center font-semibold m-4'>
-					Todo App
+					Todo App for React
 				</h1>
 			</header>
 			<form
@@ -153,34 +163,31 @@ const App = () => {
 					</span>
 				)}
 				<div className='mt-3'>
-					<label htmlFor='title'>Title</label>
+					<label htmlFor='title'>件名</label>
 					<input
-						id='title'
 						name='title'
 						className='p-3 border w-full'
 						type='text'
-						placeholder='todo'
+						placeholder='件名を入力してください'
 						value={formData.title}
 						onChange={handleChange}
 					/>
 				</div>
 				<div className='mt-3'>
-					<label htmlFor='description'>Description</label>
+					<label htmlFor='description'>詳細</label>
 					<textarea
-						id='description'
 						name='description'
 						className='p-3 border w-full'
-						placeholder='description'
+						placeholder='詳細を入力してください'
 						value={formData.description}
 						onChange={handleChange}
 					/>
 				</div>
 				<div className='mt-3 flex relative'>
 					<div className='w-1/3'>
-						<label htmlFor='timeLimit'>Time limit</label>
+						<label htmlFor='timeLimit'>期限</label>
 						<input
 							type='date'
-							id='timeLimit'
 							name='timeLimit'
 							className='p-3 border w-full'
 							placeholder='description'
@@ -191,7 +198,7 @@ const App = () => {
 					<div className='w-1/3'>
 						<button
 							className='py-3 px-5 bg-sky-600 rounded absolute right-0 bottom-0 text-white disabled:bg-slate-300'
-							disabled={formData.title === "" ? true : false}>
+							disabled={formData.title.trim() === "" ? true : false}>
 							{!isEditing.status ? "登録する" : "更新する"}
 						</button>
 					</div>
@@ -200,7 +207,7 @@ const App = () => {
 
 			<section className='todo-list mt-10'>
 				<h2 className='text-3xl text-gray-700 text-center font-semibold m-4'>
-					Todo List
+					Todoリスト
 				</h2>
 
 				<ul>
