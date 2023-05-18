@@ -19,6 +19,7 @@ type Edit = {
 };
 
 const App = () => {
+	//フォームの状態管理
 	const [formData, setFormData] = useState<Todo>({
 		title: "",
 		description: "",
@@ -27,11 +28,13 @@ const App = () => {
 		done: "none",
 	});
 
+	//編集中かどうかの状態管理
 	const [isEditing, setIsEditing] = useState<Edit>({
 		status: false,
 		id: "",
 	});
 
+	//Todoの配列の状態管理
 	const [todos, setTodos] = useState<Todo[]>([]);
 
 	/**
@@ -56,12 +59,14 @@ const App = () => {
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
+		//formからデータを全て受け取り、IDを付与して、todoに保存する
 		const uuid: string = crypto.randomUUID();
 		const newFormData = { ...formData, id: uuid };
 		if (todos !== undefined) {
 			setTodos([...todos, newFormData]);
 		}
 
+		//formの初期化
 		setFormData({
 			title: "",
 			description: "",
@@ -95,6 +100,7 @@ const App = () => {
 			done: todo.done,
 		});
 
+		//編集中の状態に更新する
 		setIsEditing({ status: true, id: todo.id });
 	};
 
@@ -108,6 +114,7 @@ const App = () => {
 		const newTodos = todos.map((todo) => {
 			if (todo.id === formData.id) {
 				return {
+					//todosに格納されているtodoのidと、formのidが一致した場合は、置き換える
 					title: formData.title,
 					description: formData.description,
 					timeLimit: formData.timeLimit,
@@ -120,8 +127,10 @@ const App = () => {
 		});
 		setTodos(newTodos);
 
+		//編集中の状態管理を初期化
 		setIsEditing({ status: false, id: "" });
 
+		//formの初期化
 		setFormData({
 			title: "",
 			description: "",
@@ -148,17 +157,17 @@ const App = () => {
 	};
 
 	return (
-		<div className='w-4/5 ml-auto mr-auto center'>
+		<div className='center ml-auto mr-auto w-4/5'>
 			<header>
-				<h1 className='text-4xl text-gray-700 text-center font-semibold m-4'>
+				<h1 className='m-4 text-center text-4xl font-semibold text-gray-700'>
 					Todo App for React
 				</h1>
 			</header>
 			<form
 				onSubmit={!isEditing.status ? handleSubmit : handleUpdateSubmit}
-				className=' p-3 input border bg-blue-50 rounded'>
+				className=' input rounded border bg-blue-50 p-3'>
 				{isEditing.status && (
-					<span className='bg-cyan-800 text-white text-sm px-2 py-1 rounded-xl'>
+					<span className='rounded-xl bg-cyan-800 px-2 py-1 text-sm text-white'>
 						編集モード
 					</span>
 				)}
@@ -166,7 +175,7 @@ const App = () => {
 					<label htmlFor='title'>件名</label>
 					<input
 						name='title'
-						className='p-3 border w-full'
+						className='w-full border p-3'
 						type='text'
 						placeholder='件名を入力してください'
 						value={formData.title}
@@ -177,19 +186,19 @@ const App = () => {
 					<label htmlFor='description'>詳細</label>
 					<textarea
 						name='description'
-						className='p-3 border w-full'
+						className='w-full border p-3'
 						placeholder='詳細を入力してください'
 						value={formData.description}
 						onChange={handleChange}
 					/>
 				</div>
-				<div className='mt-3 flex relative'>
+				<div className='relative mt-3 flex'>
 					<div className='w-1/3'>
 						<label htmlFor='timeLimit'>期限</label>
 						<input
 							type='date'
 							name='timeLimit'
-							className='p-3 border w-full'
+							className='w-full border p-3'
 							placeholder='description'
 							value={formData.timeLimit}
 							onChange={handleChange}
@@ -197,7 +206,7 @@ const App = () => {
 					</div>
 					<div className='w-1/3'>
 						<button
-							className='py-3 px-5 bg-sky-600 rounded absolute right-0 bottom-0 text-white disabled:bg-slate-300'
+							className='absolute bottom-0 right-0 rounded bg-sky-600 px-5 py-3 text-white disabled:bg-slate-300'
 							disabled={formData.title.trim() === "" ? true : false}>
 							{!isEditing.status ? "登録する" : "更新する"}
 						</button>
@@ -206,7 +215,7 @@ const App = () => {
 			</form>
 
 			<section className='todo-list mt-10'>
-				<h2 className='text-3xl text-gray-700 text-center font-semibold m-4'>
+				<h2 className='m-4 text-center text-3xl font-semibold text-gray-700'>
 					Todoリスト
 				</h2>
 
@@ -216,12 +225,12 @@ const App = () => {
 							key={todo.id}
 							className={
 								isEditing.id === todo.id
-									? "border flex justify-between p-3 mb-2 bg-blue-50"
-									: "border flex justify-between p-3 mb-2 transition-property: background-color"
+									? "mb-2 flex justify-between border bg-blue-50 p-3"
+									: "transition-property: background-color mb-2 flex justify-between border p-3"
 							}>
 							<select
 								name='done'
-								className='w-2/12 mr-5 border disabled:text-gray-400'
+								className='mr-5 w-2/12 border disabled:text-gray-400'
 								onChange={(e) => handleDoneStatusChange(todo, e)}
 								value={todo.done}
 								disabled={isEditing.status}>
@@ -230,11 +239,11 @@ const App = () => {
 								<option value='done'>完了</option>
 							</select>
 							<div className='w-7/12 gap-10'>
-								<p className='font-bold mb-1'>{todo.title}</p>
+								<p className='mb-1 font-bold'>{todo.title}</p>
 								<p className='text-xs'>{todo.description}</p>
 							</div>
 							<p className='w-2/12'>{todo.timeLimit}</p>
-							<div className='control-icons w-1/12 mr-1 flex justify-between'>
+							<div className='control-icons mr-1 flex w-1/12 justify-between'>
 								<button
 									className='disabled:text-gray-300'
 									onClick={() => handleUpdate(todo)}
