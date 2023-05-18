@@ -159,7 +159,7 @@ const App = () => {
 	return (
 		<div className='center ml-auto mr-auto w-4/5'>
 			<header>
-				<h1 className='m-4 text-center text-4xl font-semibold text-gray-700'>
+				<h1 className='m-4 text-center text-4xl font-semibold text-gray-700 '>
 					Todo App for React
 				</h1>
 			</header>
